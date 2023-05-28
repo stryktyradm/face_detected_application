@@ -1,38 +1,18 @@
-const addMessage = (message, sender) => {
-  const messages = document.getElementById('messages');
+function showForm() {
+  var form = document.createElement("form");
+  form.setAttribute("method", "post");
+  form.setAttribute("action", "/server");
 
-  const messageItem = document.createElement('li');
-  messageItem.innerText = message;
-  if (sender === 'client') {
-    messageItem.setAttribute('class', 'text-success');
-  } else {
-    messageItem.setAttribute('class', 'text-warning');
-  }
+  var input = document.createElement("input");
+  input.setAttribute("type", "text");
+  input.setAttribute("name", "data");
+  form.appendChild(input);
 
-  messages.appendChild(messageItem);
-};
+  var submit = document.createElement("input");
+  submit.setAttribute("type", "submit");
+  submit.setAttribute("value", "Отправить");
+  form.appendChild(submit);
 
-window.addEventListener('DOMContentLoaded', (event) => {
-  const socket = new WebSocket('ws://localhost:8000/ws');
-
-  // Connection opened
-  socket.addEventListener('open', function (event) {
-
-    // Send message on form submission
-    document.getElementById('form').addEventListener('submit', (event) => {
-      event.preventDefault();
-      const message = document.getElementById('message').value;
-
-      addMessage(message, 'client');
-
-      socket.send(message);
-
-      event.target.reset();
-    });
-  });
-
-  // Listen for messages
-  socket.addEventListener('message', function (event) {
-    addMessage(event.data, 'server');
-  });
-});
+  var form_container = document.getElementById('form-container');
+  form_container.appendChild(form);
+}

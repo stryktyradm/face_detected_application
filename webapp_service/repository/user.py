@@ -39,8 +39,13 @@ class UserRepository:
             return False
         return True
 
-    def update_task(self, details: Dict[str, Any]):
-        pass
+    def update_task(self, id: ObjectId, details: Dict[str, Any]):
+        try:
+            new_value = {"$set": details}
+            self.tasks.update_one({"_id": id}, new_value)
+        except Exception:
+            return False
+        return True
 
     def get_user(self, username: str):
         user = self.users.find_one({"username": username})

@@ -1,6 +1,7 @@
 from json import dumps, loads
+from bson import ObjectId
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Response, Body
 from fastapi import Depends, status, responses
 from fastapi.templating import Jinja2Templates
 from channel_box import channel_box
@@ -92,6 +93,32 @@ def task_detail(task_id: str, request: Request,
     return responses.RedirectResponse(
         "/login", status_code=status.HTTP_302_FOUND
     )
+
+
+@router.patch("/details/{task_id}")
+async def task_detail(task_id: str,
+                      data=Body(...),
+                      current_user=Depends(get_current_user),
+                      db=Depends(create_db_collections)):
+    if current_user:
+        repo = UserRepository(db)
+        links = data.get('links')
+        if links:
+            data['links'] = data['links'].split(', ')
+        repo.update_task(ObjectId(task_id), data)
+    return Response(status_code=204)
+
+
+@router.delete("/details/{task_id}")
+async def task_detail(task_id: str,
+                      current_user=Depends(get_current_user),
+                      db=Depends(create_db_collections)):
+    if current_user:
+        repo = UserRepository(db)
+        if repo.delete_task(ObjectId(task_id)):
+            return Response(status_code=204)
+        return Response(status_code=500)
+    return Response(status_code=403)
 
 
 class Channel(ChannelBoxEndpoint):
