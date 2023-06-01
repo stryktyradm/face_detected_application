@@ -1,7 +1,17 @@
 version: '3'
 
 services:
-  
+
+  web_server:
+    image: nginx:alpine
+    depends_on:
+      - webapp
+      - internal_vkapi
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+
   mongo:
     image: mongo
     ports:
